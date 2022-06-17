@@ -325,5 +325,8 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		append_to_output(`]}}`)
 	}
 
+	var obj = JSON.parse(rtv_lua)
+	rtv_lua = JSON.stringify(obj, null, "\t")
+
 	return rtv_lua
 })
