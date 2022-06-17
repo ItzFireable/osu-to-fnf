@@ -174,7 +174,26 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var sectionlength = stepcrotchet * 16;
 	var currentlength = 0;
 
-	append_to_output(`{"song":{"player2":"${options.player2}","player1":"${options.player1}","speed":${options.speed},"needsVoices":${options.needsvoices},"sectionLengths":[],"song":"${options.song}","bpm":${options.bpm},"sections":0,"validScore":true,"notes":[`)
+	if (options.svs === true) {
+		append_to_output(`{"sliderVelocities":[`)
+		for (var i = 0; i < beatmap.timingPoints.length; i++) {
+			var pointBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60).toFixed(6)
+			if (pointBPM != options.bpm) {
+				append_to_output(`{"multiplier": ${(options.bpm/pointBPM)},"startTime": ${beatmap.timingPoints[i].offset}},`)
+				// Convert BPM to SV??
+			}
+			else
+			{
+				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
+			}
+		}
+
+		rtv_lua = rtv_lua.slice(0, -1)
+
+		append_to_output(`],"song":{"player2":"${options.player2}","player1":"${options.player1}","speed":${options.speed},"needsVoices":${options.needsvoices},"sectionLengths":[],"song":"${options.song}","bpm":${options.bpm},"sections":0,"validScore":true,"notes":[`)
+	} else {
+		append_to_output(`{"song":{"player2":"${options.player2}","player1":"${options.player1}","speed":${options.speed},"needsVoices":${options.needsvoices},"sectionLengths":[],"song":"${options.song}","bpm":${options.bpm},"sections":0,"validScore":true,"notes":[`)
+	}
 
 	if (options.onlyp1 === false){
 		while (true) {
@@ -282,7 +301,29 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		append_to_output(`]}`)
 	}
 
-	append_to_output(`]}}`)
+	if (options.kiai === true) {
+		append_to_output(`],"events":[`)
+		let prevKiai = false
+
+		for (var i = 0; i < beatmap.timingPoints.length; i++) {
+			var isKiai = beatmap.timingPoints[i].kiaiTimeActive
+
+			if (isKiai && prevKiai == false) {
+				prevKiai = true
+				append_to_output(`[${beatmap.timingPoints[i].offset},[["Kiai","true",""]]],`)
+			}
+			else if (!isKiai && prevKiai == true) {
+				prevKiai = false
+				append_to_output(`[${beatmap.timingPoints[i].offset},[["Kiai","false",""]]],`)
+			}
+		}
+
+		rtv_lua = rtv_lua.slice(0, -1)
+		
+		append_to_output(`]}}`)
+	} else {
+		append_to_output(`]}}`)
+	}
 
 	return rtv_lua
 })
