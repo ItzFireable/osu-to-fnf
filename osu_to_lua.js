@@ -148,11 +148,11 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		}
 	}
 	if (options.bpm === "") {
-		options.bpm = beatmap.bpmMax;
+		options.bpm = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60).toFixed(6);
 	}
 	options.bpm = parseInt(options.bpm);
 	if (isNaN(options.bpm)) {
-		options.bpm = 120;
+		options.bpm = 120
 	}
 	if (options.player1 === "") {
 		options.player1 = "bf";
@@ -167,8 +167,9 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	if (isNaN(options.speed)) {
 		options.speed = 1;
 	}
-	
 
+	console.log(options.bpm)
+	
 	var crotchet  = ((60 / options.bpm) * 1000);
 	var stepcrotchet  = crotchet  / 4;
 	var sectionlength = stepcrotchet * 16;
@@ -181,7 +182,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			if (pointBPM != options.bpm) {
 				if (options.bpm/pointBPM ==  Infinity) continue;
 				append_to_output(`{"multiplier": ${(options.bpm/pointBPM)},"startTime": ${beatmap.timingPoints[i].offset}},`)
-				// Convert BPM to SV??
 			}
 			else
 			{
