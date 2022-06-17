@@ -179,11 +179,13 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			var pointBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60).toFixed(6)
 			if (pointBPM != options.bpm) {
+				if (options.bpm/pointBPM ==  Infinity) continue;
 				append_to_output(`{"multiplier": ${(options.bpm/pointBPM)},"startTime": ${beatmap.timingPoints[i].offset}},`)
 				// Convert BPM to SV??
 			}
 			else
 			{
+				if (beatmap.timingPoints[i].velocity == Infinity) continue;
 				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
 			}
 		}
@@ -294,21 +296,43 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			} else {
 				append_to_output(`,${itr.duration}]`)
 			}
-			if (i !== beatmap.hitObjects.length - 1) {
+
+			if (options.convert === true) {
 				append_to_output(",")
+
+				append_to_output(`[${itr.startTime},${track+4}`)
+
+				if (itr.duration === undefined) {
+					append_to_output(`,0]`)
+				} else {
+					append_to_output(`,${itr.duration}]`)
+				}
+
+				
+				if (i !== beatmap.hitObjects.length - 1) {
+					append_to_output(",")
+				}
+			} else {
+				if (i !== beatmap.hitObjects.length - 1) {
+					append_to_output(",")
+				}
 			}
+
 		}
+		
 		append_to_output(`]}`)
 	}
 
 	if (options.kiai === true) {
 		append_to_output(`],"events":[`)
 		let prevKiai = false
+		let hasKiai = false
 
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			var isKiai = beatmap.timingPoints[i].kiaiTimeActive
 
 			if (isKiai && prevKiai == false) {
+				hasKiai = true
 				prevKiai = true
 				append_to_output(`[${beatmap.timingPoints[i].offset},[["Kiai","true",""]]],`)
 			}
@@ -318,15 +342,20 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			}
 		}
 
-		rtv_lua = rtv_lua.slice(0, -1)
+		if (hasKiai == true)
+			rtv_lua = rtv_lua.slice(0, -1)
 		
 		append_to_output(`]}}`)
 	} else {
 		append_to_output(`]}}`)
 	}
 
-	var obj = JSON.parse(rtv_lua)
-	rtv_lua = JSON.stringify(obj, null, "\t")
+	if (options.format === true) {
+		console.log(rtv_lua)
+
+		var obj = JSON.parse(rtv_lua)
+		rtv_lua = JSON.stringify(obj, null, "\t")
+	}
 
 	return rtv_lua
 })

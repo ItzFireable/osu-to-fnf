@@ -77,7 +77,9 @@
 					"song": $("#song").val(),
 					"onlyp1": document.getElementById("onlyp1").checked,
 					"kiai": document.getElementById("addkiai").checked,
-					"svs": document.getElementById("addsvs").checked
+					"svs": document.getElementById("addsvs").checked,
+					"convert": document.getElementById("convert").checked,
+					"format": document.getElementById("autoformat").checked,
 				};
 				$("#out").val(module.require("osu_to_lua")(osu_file_str, options))
 			})
@@ -97,6 +99,8 @@
 		(Defaults to false)<br />
 		<a>Add kiai</a><input id="addkiai" type="checkbox" placeholder="addkiai"> - Add Kiai to chart events (Defaults to false)<br />
 		<a>Add SVs</a><input id="addsvs" type="checkbox" placeholder="addsvs"> - Add SVs to chart events (Defaults to false)<br />
+		<a>4k to 8k</a><input id="convert" type="checkbox" placeholder="convert"> - Clone a 4k chart to both sides (Defaults to false, ONLY USE ON 4K CHARTS WITH ONLY PLAYER1 ENABLED)<br />
+		<a>Auto format</a><input id="autoformat" type="checkbox" placeholder="autoformat"> - Automatically format your chart (Defaults to false)<br />
 	</div>
 	<br />
 	<div class="content content-active">
@@ -104,7 +108,7 @@
 		<textarea id="out" style="width:49.5%;height:200px;margin-left:0.5%;" readonly>output (paste this into the JSON file with the correct name)</textarea>
 	</div>
 	<div class="content content-active" style="padding: 18px 18px 0 18px !important">
-		<button id="submit">CONVERT</button>
+		<button id="submit">Convert</button>
 	</div>
 
 
