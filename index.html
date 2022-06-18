@@ -80,6 +80,7 @@
 					"svs": document.getElementById("addsvs").checked,
 					"convert": document.getElementById("convert").checked,
 					"format": document.getElementById("autoformat").checked,
+					"twoplayers": document.getElementById("twoplayers").checked,
 				};
 				$("#out").val(module.require("osu_to_lua")(osu_file_str, options))
 			})
@@ -99,6 +100,7 @@
 		(Defaults to false)<br />
 		<a>Add kiai</a><input id="addkiai" type="checkbox" placeholder="addkiai"> - Add Kiai to chart events (Defaults to false)<br />
 		<a>Add SVs</a><input id="addsvs" type="checkbox" placeholder="addsvs"> - Add SVs to chart events (Defaults to false)<br />
+		<a>Convert to 2v2</a><input id="twoplayers" type="checkbox" placeholder="twoplayers"> - Converts chart to 2v2 using hitsounds (Defaults to false)<br />
 		<a>4k to 8k</a><input id="convert" type="checkbox" placeholder="convert"> - Clone a 4k chart to both sides (Defaults to false, ONLY USE ON 4K CHARTS WITH ONLY PLAYER1 ENABLED)<br />
 		<a>Auto format</a><input id="autoformat" type="checkbox" placeholder="autoformat"> - Automatically format your chart (Defaults to false)<br />
 	</div>

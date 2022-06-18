@@ -258,6 +258,45 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 				} else {
 					append_to_output(`,${notes[i].duration}]`)
 				}
+
+				if (options.twoplayers === true){
+					if (notes[i].soundTypes.includes("whistle") || notes[i].soundTypes.includes("clap")) {
+						append_to_output(`,[${notes[i].startTime},`)
+
+						var track = hitobj_x_to_track_number(notes[i].position[0]);
+			
+						if (camera === false) {
+							append_to_output(track)
+						} else if (camera === true && p1 === true && p2 === false) {
+							append_to_output(track - 4)
+						} else if (camera === true && p1 === true && p2 === true) {
+							if (track > 3) {
+								append_to_output(track - 4)
+							} else if (track < 4) {
+								append_to_output(track + 4)
+							}
+			
+						} else if (camera === true && p2 === false && p1 === false) {
+							if (track > 3) {
+								append_to_output(track - 4)
+							} else if (track < 4) {
+								append_to_output(track + 4)
+							}
+						}
+			
+						if (notes[i].duration === undefined) {
+							append_to_output(`,0`)
+						} else {
+							append_to_output(`,${notes[i].duration}`)
+						}
+						if (notes[i].soundTypes.includes("whistle")) {
+							append_to_output(`,"Alt Animation"]`)
+						} else if (notes[i].soundTypes.includes("clap")) {
+							append_to_output(`,"GF Sing"]`)
+						}
+					}
+				}
+				
 				if (i !== notes.length - 1) {
 					append_to_output(",")
 				}
