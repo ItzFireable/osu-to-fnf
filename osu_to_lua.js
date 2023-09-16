@@ -175,17 +175,21 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var sectionlength = stepcrotchet * 16;
 	var currentlength = 0;
 
+	var prevMult = 1;
+	var baseBPM = 0;
+
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
+		baseBPM = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			if (beatmap.timingPoints[i].timingChange == false)
-			{
-				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
-			}
-			else
-			{
-				append_to_output(`{"multiplier": 1,"startTime": ${beatmap.timingPoints[i].offset}},`)
-			}
+			if (beatmap.timingPoints[i].velocity == prevMult) continue;
+			prevMult = beatmap.timingPoints[i].velocity;
+
+			let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
+			if (baseBPM != newBPM && prevMult == 1)
+				prevMult = newBPM / baseBPM;
+			
+			append_to_output(`{"multiplier": ${prevMult},"startTime": ${beatmap.timingPoints[i].offset}},`)
 		}
 
 		rtv_lua = rtv_lua.slice(0, -1)
