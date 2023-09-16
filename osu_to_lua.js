@@ -180,13 +180,11 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			if (beatmap.timingPoints[i].timingChange == false)
 			{
-				console.log(beatmap.timingPoints[i].velocity)
 				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
 			}
 			else
 			{
-				// this is a BPM change 
-				// TODO: create a separate table for BPM changes
+				append_to_output(`{"multiplier": 1,"startTime": ${beatmap.timingPoints[i].offset}},`)
 			}
 		}
 
