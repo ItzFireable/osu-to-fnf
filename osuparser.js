@@ -110,15 +110,15 @@ function beatmapParser() {
       kiaiTimeActive:    (members[7] == 1)
     };
 
-    if (!isNaN(timingPoint.beatLength) && timingPoint.beatLength !== 0) {
-      if (timingPoint.beatLength > 0) {
-        // If positive, beatLength is the length of a beat in milliseconds
+    if (!isNaN(timingPoint.beatLength)) {
+      if (timingPoint.timingChange == true) {
+        // If is a timing change, its a BPM change
         var bpm        = Math.round(60000 / timingPoint.beatLength);
         beatmap.bpmMin = beatmap.bpmMin ? Math.min(beatmap.bpmMin, bpm) : bpm;
         beatmap.bpmMax = beatmap.bpmMax ? Math.max(beatmap.bpmMax, bpm) : bpm;
         timingPoint.bpm    = bpm;
       } else {
-        // If negative, beatLength is a velocity factor
+        // If not, beatLength is a velocity factor
         timingPoint.velocity = Math.abs(100 / timingPoint.beatLength);
       }
     }
