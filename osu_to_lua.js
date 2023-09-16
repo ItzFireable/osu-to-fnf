@@ -176,22 +176,21 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var currentlength = 0;
 
 	if (options.svs === true) {
-		append_to_output(`{"sliderVelocities":[`)
+		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			var pointBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60).toFixed(6)
-			if (pointBPM != options.bpm) {
-				if (options.bpm/pointBPM ==  Infinity) continue;
+			if (!beatmap.timingPoints[i].timingChange)
+			{
+				var pointBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60).toFixed(6)
 				append_to_output(`{"multiplier": ${(options.bpm/pointBPM)},"startTime": ${beatmap.timingPoints[i].offset}},`)
 			}
 			else
 			{
-				if (beatmap.timingPoints[i].velocity == Infinity) continue;
-				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
+				// this is a BPM change 
+				// TODO: create a separate table for BPM changes
 			}
 		}
 
 		rtv_lua = rtv_lua.slice(0, -1)
-
 		append_to_output(`],"song":{"player2":"${options.player2}","player1":"${options.player1}","speed":${options.speed},"needsVoices":${options.needsvoices},"sectionLengths":[],"song":"${options.song}","bpm":${options.bpm},"sections":0,"validScore":true,"notes":[`)
 	} else {
 		append_to_output(`{"song":{"player2":"${options.player2}","player1":"${options.player1}","speed":${options.speed},"needsVoices":${options.needsvoices},"sectionLengths":[],"song":"${options.song}","bpm":${options.bpm},"sections":0,"validScore":true,"notes":[`)
