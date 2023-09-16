@@ -180,8 +180,8 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			if (!beatmap.timingPoints[i].timingChange)
 			{
-				var pointBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60).toFixed(6)
-				append_to_output(`{"multiplier": ${(options.bpm/pointBPM)},"startTime": ${beatmap.timingPoints[i].offset}},`)
+				var velocity = beatmap.timingPoints[i].velocity
+				append_to_output(`{"multiplier": ${velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
 			}
 			else
 			{
