@@ -178,7 +178,8 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			if (timingPoint.timingChange == false)
+			if (beatmap.timingPoints[i].timingChange == false)
+				console.log(beatmap.timingPoints[i].velocity)
 				append_to_output(`{"multiplier": ${beatmap.timingPoints[i].velocity},"startTime": ${beatmap.timingPoints[i].offset}},`)
 			else
 			{
