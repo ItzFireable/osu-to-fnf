@@ -44,7 +44,6 @@
 					"player1": $("#player1").val(),
 					"speed": $("#speed").val(),
 					"keycount": $("#keycount").val(),
-					"needsvoices": document.getElementById("needsvoices").checked,
 					"song": $("#song").val(),
 					"onlyp1": document.getElementById("onlyp1").checked,
 					"svs": document.getElementById("addsvs").checked,
@@ -63,6 +62,7 @@
 	<div class="innerBody">
 		<div class="background"></div>
 		<h2 class="title">osu!mania to Friday Night Funkin' converter</h2>
+		<span class="information" data-tooltip="Ask me, I'm not writing it here. If you won't ask me, figure it out, it can't be that difficult." data-tooltip-position='right'>How to use (?)</span>
 		<div class="modifierList">
 			<div class="modifiers">
 				<a>Song:</a><input id="song" type="text" placeholder="Song name"><span data-tooltip='The name of the song folder in assets (Defaults to song name in osu file or "songName" if none)' data-tooltip-position='right'>?</span>
@@ -73,8 +73,8 @@
 				<a>Keycount</a><input id="keycount" type="text" placeholder="Keycount"><span data-tooltip='Keycount (Defaults to 4)' data-tooltip-position='right'>?</span>
 			</div>
 			<div class="modifiers right">
-				<a>No sections</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"><span data-tooltip='Use no sections (Defaults to false)' data-tooltip-position='right'>?</span>
-				<a>Clone chart</a><input id="convert" type="checkbox" placeholder="convert"><span data-tooltip='Clone a 4k chart to both sides (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>No camera movement</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"><span data-tooltip='Set mustHitSection to always true (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Clone chart</a><input id="convert" type="checkbox" placeholder="convert"><span data-tooltip='Clone the chart to both sides (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Add slider velocities</a><input id="addsvs" type="checkbox" placeholder="addsvs"><span data-tooltip='Add SVs to "sliderVelocities" table (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Add BPM changes</a><input id="addbpm" type="checkbox" placeholder="addbpm"><span data-tooltip='Add BPM changes to "bpmChanges" table (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Convert to 2v2</a><input id="twoplayers" type="checkbox" placeholder="twoplayers"><span data-tooltip='Converts chart to 2v2 using hitsounds (Defaults to false)' data-tooltip-position='right'>?</span>
@@ -85,7 +85,10 @@
 			<textarea id="in" placeholder="Input (osu!mania .osu)"></textarea>
 			<textarea id="out" readonly placeholder="Output (Friday Night Funkin' .json)"></textarea>
 		</div>
-		<button class="submit" id="submit">Convert</button>
+		<div class="objects">
+			<button class="submit" id="submit">Convert</button>
+			<a class="watermark">@fireable on Discord, @fireable__ on Twitter / X</a>
+		</div>
 	</div>
 </body>
 

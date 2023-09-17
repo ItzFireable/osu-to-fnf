@@ -2,10 +2,6 @@
     display: inline;
     position: relative;
     cursor: help;
-    float: left;
-
-    line-height: 24px;
-    margin-left: 8px;
 }
 /* Tooltip styling */
 [data-tooltip]:before {

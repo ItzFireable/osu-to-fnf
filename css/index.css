@@ -37,7 +37,15 @@ body {
 
 .title {
     margin: 0;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
+}
+
+.information {
+    margin: 0;
+}
+
+.information:before {
+    min-width: 500px !important;
 }
 
 * {
@@ -51,9 +59,17 @@ body {
 }
 
 .modifiers {
+    margin-top: 8px;
     width: 400px;
     vertical-align: middle;
     margin-bottom: 4px;
+}
+
+.modifiers > span {
+    float: left;
+
+    line-height: 24px;
+    margin-left: 8px;
 }
 
 .modifiers>a {
@@ -63,7 +79,7 @@ body {
 
     float: left;
     clear: left;
-    width: 160px;
+    width: 180px;
     margin-bottom: 4px;
 }
 
@@ -113,8 +129,6 @@ input[type="checkbox"]:checked {
     display: flex;
     justify-content: center;
     justify-content: space-between;
-
-    margin-bottom: 8px;
 }
 
 .objects > textarea {
@@ -129,6 +143,8 @@ input[type="checkbox"]:checked {
     color: white;
     background: rgb(30, 30, 30);
     border: rgba(255, 255, 255, 0.1) solid 2px;
+
+    margin-bottom: 8px;
 }
 
 .submit {
@@ -142,4 +158,11 @@ input[type="checkbox"]:checked {
     width: 200px;
     height: 40px;
     border: rgba(255, 255, 255, 0.1) solid 2px;
+}
+
+.watermark {
+    padding-top: 24px;
+    line-height: 16px;
+
+    font-size: 0.85em;
 }
