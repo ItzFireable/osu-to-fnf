@@ -3,6 +3,7 @@
     position: relative;
     cursor: help;
 }
+
 /* Tooltip styling */
 [data-tooltip]:before {
     content: attr(data-tooltip);
