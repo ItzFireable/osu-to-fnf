@@ -176,7 +176,9 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var currentlength = 0;
 
 	var prevMult = 1;
-	var baseBPM = 0;
+	var prevOffset = 0;
+	
+	// var baseBPM = 0;
 
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
@@ -185,11 +187,18 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			if (beatmap.timingPoints[i].velocity == prevMult) continue;
 			prevMult = beatmap.timingPoints[i].velocity;
 
-			let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
+			// Unfortunately Andromeda / YAFN / AFN won't allow same time multipliers so we offset the previous one if that is the case
+			if (prevOffset == beatmap.timingPoints[i].offset) 
+				prevOffset += 1
+			else
+				prevOffset = beatmap.timingPoints[i].offset
+
+			// Unused BPM math
+			/*let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
 			if (baseBPM != newBPM && prevMult == 1)
-				prevMult = newBPM / baseBPM;
+				prevMult = newBPM / baseBPM;*/
 			
-			append_to_output(`{"multiplier": ${prevMult},"startTime": ${beatmap.timingPoints[i].offset}},`)
+			append_to_output(`{"multiplier": ${prevMult},"startTime": ${prevOffset}},`)
 		}
 
 		rtv_lua = rtv_lua.slice(0, -1)
