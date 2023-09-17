@@ -189,11 +189,11 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 
 			// Unfortunately Andromeda / YAFN / AFN won't allow same time multipliers so we offset the previous one if that is the case (exception for BPM changes, for polyriddim(?))
 			if (prevOffset == beatmap.timingPoints[i].offset && prevMult == 1) 
-				prevOffset -= 1
-			elseif (prevOffset == beatmap.timingPoints[i].offset) 
-				prevOffset += 1
+				prevOffset -= 1;
+			else if (prevOffset == beatmap.timingPoints[i].offset) 
+				prevOffset += 1;
 			else
-				prevOffset = beatmap.timingPoints[i].offset
+				prevOffset = beatmap.timingPoints[i].offset;
 
 			// Unused BPM math
 			/*let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
