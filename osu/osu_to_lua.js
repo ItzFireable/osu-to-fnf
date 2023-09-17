@@ -77,8 +77,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		var start_time = itr.startTime
 
 		if (_tracks_next_open[track] >= start_time) {
-
-			append_to_output(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
+			console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
 				msToTime(start_time),
 				track,
 				type,
@@ -94,7 +93,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		if (type == "slider") {
 			var end_time = start_time + itr.duration
 			if (_tracks_next_open[track] >= end_time) {
-				append_to_output(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
+				console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
 					msToTime(start_time),
 					track,
 					type,
@@ -114,31 +113,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		return !(_i_to_removes[i])
 	})
 
-	// you can do the hit from 0 - 7, 0 being the furthest left for player2 (dad, pico, ect...) and 7 being the furthest right for player1 (bf)
-	// this means that it is possible to make one very long section that has must hit true and the player1 has to hit the notes and the opponent would hit them automatically
-	// this means there is no need for making multiple sections you can compile into one section and it would be the same (but i think the cameras get messed up)
-	// the last option would be to have this long section build but if possible make it multiple sections to not mess up the cameras
-
-	// for making multiple sections check if it is player1 or player2 and try make them seperate 
-
-	/*
-	to fix the camera so it focuses on the correct person and acts like the normal fnf camera they need to be split into sections defining the person in shot with the musthit 
-	this means that you must group the notes into sections by gathering the notes in the next section independent of the notes
-
-	so for the first section you would loop through the notes checking if they are only player1 or only player2 if they are only player1 or 2 that would be the camera position
-	(to check for player1 it would be if all notes are in the 4 right colums opposite side for player2)
-	if there are both players then it would default to player1 for focus like in the normal fnf
-	this continues for each section and the section marker is remembered indepentently 
-	(for example if sections were 1000 long the first section would be checking for notes in the range of this 1000 after the check the new starting section would be 2000)
-	
-
-	need to add better page for picking the options and instructions
-
-	*/
-
-	console.log(beatmap);
-	console.log(options);
-
 	if (options.song === "") {
 		if (beatmap.Title !== "" || beatmap.Title !== undefined) {
 			options.song = beatmap.Title;
@@ -152,7 +126,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	}
 	options.bpm = parseInt(options.bpm);
 	if (isNaN(options.bpm)) {
-		options.bpm = 120
+		options.bpm = 0
 	}
 	if (options.player1 === "") {
 		options.player1 = "bf";
@@ -168,38 +142,44 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		options.speed = 1;
 	}
 
-	console.log(options.bpm)
-	
-	var crotchet  = ((60 / options.bpm) * 1000);
-	var stepcrotchet  = crotchet  / 4;
-	var sectionlength = stepcrotchet * 16;
+	if (options.bpm == 0)
+		return 'Error: No BPM found.';
+
+	var crochet  = ((60 / options.bpm) * 1000);
+	var stepcrochet  = crochet  / 4;
+	var sectionlength = stepcrochet * 16;
 	var currentlength = 0;
 
 	var prevMult = 1;
 	var prevOffset = 0;
 	
-	// var baseBPM = 0;
+	var baseBPM = 0;
 
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
-		baseBPM = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			if (beatmap.timingPoints[i].velocity == prevMult) continue;
 			prevMult = beatmap.timingPoints[i].velocity;
+			prevOffset = beatmap.timingPoints[i].offset;
 
-			// Unfortunately Andromeda / YAFN / AFN won't allow same time multipliers so we offset the previous one if that is the case
-			if (prevOffset == beatmap.timingPoints[i].offset) {
-				prevOffset += .01; // Might or might not work, we will see....
-			} else {
-				prevOffset = beatmap.timingPoints[i].offset;
+			if (prevMult != 1)
+			{
+				append_to_output(`{"multiplier": ${prevMult},"startTime": ${prevOffset}},`)
 			}
+		}
 
-			// Unused BPM math
-			/*let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
-			if (baseBPM != newBPM && prevMult == 1)
-				prevMult = newBPM / baseBPM;*/
-			
-			append_to_output(`{"multiplier": ${prevMult},"startTime": ${prevOffset}},`)
+		baseBPM = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60)
+
+		rtv_lua = rtv_lua.slice(0, -1)
+		append_to_output(`],{"bpmChanges":[{"bpm": ${baseBPM}, "startTime": 0},`)
+		
+		for (var i = 0; i < beatmap.timingPoints.length; i++) {
+			let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
+			if (baseBPM != newBPM)
+			{
+				baseBPM = newBPM;
+				append_to_output(`{"bpm": ${baseBPM},"startTime": ${beatmap.timingPoints[i].offset}},`)
+			}
 		}
 
 		rtv_lua = rtv_lua.slice(0, -1)
@@ -288,8 +268,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			}
 	
 			append_to_output(`]}`)
-	
-	
 			currentlength += sectionlength;
 	
 			var breaking = true;
@@ -301,8 +279,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 			}
 			if (breaking === false) {
 				append_to_output(",")
-			}
-			if (breaking === true){
+			} else {
 				break;
 			}
 		}
@@ -345,32 +322,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		}
 		
 		append_to_output(`]}`)
-	}
-
-	if (options.kiai === true) {
-		append_to_output(`],"events":[`)
-		let prevKiai = false
-		let hasKiai = false
-
-		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			var isKiai = beatmap.timingPoints[i].kiaiTimeActive
-
-			if (isKiai && prevKiai == false) {
-				hasKiai = true
-				prevKiai = true
-				append_to_output(`[${beatmap.timingPoints[i].offset},[["Kiai","true",""]]],`)
-			}
-			else if (!isKiai && prevKiai == true) {
-				prevKiai = false
-				append_to_output(`[${beatmap.timingPoints[i].offset},[["Kiai","false",""]]],`)
-			}
-		}
-
-		if (hasKiai == true)
-			rtv_lua = rtv_lua.slice(0, -1)
-		
-		append_to_output(`]}}`)
-	} else {
 		append_to_output(`]}}`)
 	}
 

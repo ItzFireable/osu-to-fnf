@@ -3,81 +3,52 @@
 
 <head>
 	<meta charset="UTF-8">
-	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap');
+	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" href="css/tooltip.css">
 
-		body {
-			margin: 0;
-		}
+	<title>osu!mania to FNF - Fireable</title>
+  	<link rel="icon" type="image/png" href="https://fireable.me/kuvat/logo.png" />
 
-		* {
-			font-family: 'Open Sans', sans-serif;
-		}
-
-		.content {
-			padding: 18px 18px 0 18px;
-			display: none;
-			overflow: hidden;
-			background-color: white;
-		}
-
-		.content-active {
-			padding: 0 18px 0 18px;
-			display: flex;
-			justify-content: center;
-		}
-
-		.content a {
-			display: inline-block;
-			width: 150px;
-			margin-bottom: 8px;
-		}
-
-		input [type="text"] {
-			width: 200px;
-		}
-	</style>
-</head>
-
-<body>
-	<script>
+	  <script>
 		var module = {}
 		module.__exports = {}
 		module.export = function (name, obj) {
 			if (module.__exports[name] != null) {
-				throw "export already exists::" + name
+				throw "Export already exists::" + name
 			}
 			module.__exports[name] = obj
 		}
 		module.require = function (name) {
 			if (module.__exports[name] == null) {
-				throw "require cannot find::" + name
+				throw "Require cannot find::" + name
 			}
 			return module.__exports[name]
 		}
 	</script>
-	<script src="curves.js"></script>
-	<script src="slidercalc.js"></script>
-	<script src="osuparser.js"></script>
-	<script src="format.js"></script>
-	<script src="osu_to_lua.js"></script>
+	
+	<script src="osu/curves.js"></script>
+	<script src="osu/slidercalc.js"></script>
+	<script src="osu/osuparser.js"></script>
+	<script src="osu/format.js"></script>
+	<script src="osu/osu_to_lua.js"></script>
 
 	<script src="jquery.js"></script>
 	<script>
 		$(function () {
 			$("#submit").click(function () {
-				$("#out").val("converting...")
+				$("#out").val("Converting...")
 				var osu_file_str = $("#in").val()
 				var options = {
 					"bpm": $("#bpm").val(),
 					"player2": $("#player2").val(),
 					"player1": $("#player1").val(),
 					"speed": $("#speed").val(),
+					"keycount": $("#keycount").val(),
 					"needsvoices": document.getElementById("needsvoices").checked,
 					"song": $("#song").val(),
 					"onlyp1": document.getElementById("onlyp1").checked,
-					"kiai": document.getElementById("addkiai").checked,
 					"svs": document.getElementById("addsvs").checked,
+					"bpmChanges": document.getElementById("addbpm").checked,
 					"convert": document.getElementById("convert").checked,
 					"format": document.getElementById("autoformat").checked,
 					"twoplayers": document.getElementById("twoplayers").checked,
@@ -86,52 +57,36 @@
 			})
 		})
 	</script>
-	<div class="content" style="display: block;">
-		<a>Song:</a><input id="song" type="text" placeholder="Song name"> - The name of the song folder in assets
-		(Defaults to song name in osu file or "songName" if none)<br />
-		<a>Player1</a><input id="player1" type="text" placeholder="Player1"> - Player1's name (Defaults to "bf")<br />
-		<a>Player2</a><input id="player2" type="text" placeholder="Player2"> - Player2's name (Defaults to "dad")<br />
-		<a>BPM</a><input id="bpm" type="text" placeholder="BPM"> - BPM of the song (Defaults to max bpm in osu file or
-		120 if none)<br />
-		<a>Speed</a><input id="speed" type="text" placeholder="Speed"> - Note approach speed (Defaults to 1)<br />
-		<a>Needs voices</a><input id="needsvoices" type="checkbox" placeholder="needsvoices"> - Does the song have a
-		second file for voices (Defaults to false)<br />
-		<a>Only player1</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"> - All notes on player1's side
-		(Defaults to false)<br />
-		<a>Add kiai</a><input id="addkiai" type="checkbox" placeholder="addkiai"> - Add Kiai to chart events (Defaults to false)<br />
-		<a>Add SVs</a><input id="addsvs" type="checkbox" placeholder="addsvs"> - Add SVs to chart events (Defaults to false)<br />
-		<a>Convert to 2v2</a><input id="twoplayers" type="checkbox" placeholder="twoplayers"> - Converts chart to 2v2 using hitsounds (Defaults to false)<br />
-		<a>4k to 8k</a><input id="convert" type="checkbox" placeholder="convert"> - Clone a 4k chart to both sides (Defaults to false, ONLY USE ON 4K CHARTS WITH ONLY PLAYER1 ENABLED)<br />
-		<a>Auto format</a><input id="autoformat" type="checkbox" placeholder="autoformat"> - Automatically format your chart (Defaults to false)<br />
-	</div>
-	<br />
-	<div class="content content-active">
-		<textarea id="in" style="width:49.5%;height:200px;margin-right:0.5%;" placeholder="paste contents of osu file here"></textarea>
-		<textarea id="out" style="width:49.5%;height:200px;margin-left:0.5%;" readonly>output (paste this into the JSON file with the correct name)</textarea>
-	</div>
-	<div class="content content-active" style="padding: 18px 18px 0 18px !important">
-		<button id="submit">Convert</button>
-	</div>
+</head>
 
-
-	<script>
-		var coll = document.getElementsByClassName("collapsible");
-		var i;
-
-		for (i = 0; i < coll.length; i++) {
-			coll[i].addEventListener("click", function () {
-				this.classList.toggle("active");
-				var content = this.nextElementSibling;
-				if (content.style.display === "block") {
-					content.style.display = "none";
-					this.children[0].innerHTML = this.value + "∨"
-				} else {
-					content.style.display = "block";
-					this.children[0].innerHTML = this.value + "∧"
-				}
-			});
-		}
-	</script>
+<body>
+	<div class="innerBody">
+		<div class="background"></div>
+		<h2 class="title">osu!mania to Friday Night Funkin' converter</h2>
+		<div class="modifierList">
+			<div class="modifiers">
+				<a>Song:</a><input id="song" type="text" placeholder="Song name"><span data-tooltip='The name of the song folder in assets (Defaults to song name in osu file or "songName" if none)' data-tooltip-position='right'>?</span>
+				<a>Player1</a><input id="player1" type="text" placeholder="Player1"><span data-tooltip='Player 1 name (Defaults to "bf")' data-tooltip-position='right'>?</span>
+				<a>Player2</a><input id="player2" type="text" placeholder="Player2"><span data-tooltip='Player 2 name (Defaults to "dad")' data-tooltip-position='right'>?</span>
+				<a>BPM</a><input id="bpm" type="text" placeholder="BPM"><span data-tooltip='BPM of the song (Defaults to first BPM in the osu! file (or 0 if does not exist))' data-tooltip-position='right'>?</span>
+				<a>Speed</a><input id="speed" type="text" placeholder="Speed"><span data-tooltip='Note approach speed (Defaults to 1)' data-tooltip-position='right'>?</span>
+				<a>Keycount</a><input id="keycount" type="text" placeholder="Keycount"><span data-tooltip='Keycount (Defaults to 4)' data-tooltip-position='right'>?</span>
+			</div>
+			<div class="modifiers right">
+				<a>No sections</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"><span data-tooltip='Use no sections (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Clone chart</a><input id="convert" type="checkbox" placeholder="convert"><span data-tooltip='Clone a 4k chart to both sides (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Add slider velocities</a><input id="addsvs" type="checkbox" placeholder="addsvs"><span data-tooltip='Add SVs to "sliderVelocities" table (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Add BPM changes</a><input id="addbpm" type="checkbox" placeholder="addbpm"><span data-tooltip='Add BPM changes to "bpmChanges" table (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Convert to 2v2</a><input id="twoplayers" type="checkbox" placeholder="twoplayers"><span data-tooltip='Converts chart to 2v2 using hitsounds (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Auto format</a><input id="autoformat" type="checkbox" placeholder="autoformat"><span data-tooltip='Automatically format your chart (Defaults to false)' data-tooltip-position='right'>?</span>
+			</div>
+		</div>
+		<div class="objects">
+			<textarea id="in" placeholder="Input (osu!mania .osu)"></textarea>
+			<textarea id="out" readonly placeholder="Output (Friday Night Funkin' .json)"></textarea>
+		</div>
+		<button class="submit" id="submit">Convert</button>
+	</div>
 </body>
 
 </html>
