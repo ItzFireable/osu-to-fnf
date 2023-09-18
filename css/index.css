@@ -5,7 +5,7 @@ body {
     background-color: rgb(30, 30, 30) !important;
     border: rgba(255, 255, 255, 0.1) solid 2px;
     padding: 8px;
-    overflow-x: hidden;
+    overflow-y: hidden;
     color: white;
 
     border-radius: 8px;
@@ -60,7 +60,7 @@ body {
 
 .modifiers {
     margin-top: 8px;
-    width: 400px;
+    width: 500px;
     vertical-align: middle;
     margin-bottom: 4px;
 }
@@ -79,7 +79,7 @@ body {
 
     float: left;
     clear: left;
-    width: 180px;
+    width: 220px;
     margin-bottom: 4px;
 }
 

@@ -120,6 +120,14 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		options.keycount = 4;
 	}
 
+	if (options.camSection === ""){
+		options.camSection = 2;
+	}
+	options.camSection = parseInt(options.camSection);
+	if (isNaN(options.camSection)) {
+		options.camSection = 2;
+	}
+
 	options.lanes = options.convert == true ? 1 : 2;
 	if (options.bpm == 0)
 		return 'Error: No BPM found.';
@@ -128,6 +136,8 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var stepcrochet  = crochet  / 4;
 	var sectionlength = stepcrochet * 16;
 	var currentlength = 0;
+	var currentSection = 0;
+	var prevCamera = false;
 
 	var prevMult = 1;
 	var prevOffset = 0;
@@ -200,6 +210,15 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 
 		if (options.onlyp1 === true)
 			camera = false;
+		
+		if (options.altCamera && options.convert) {
+			if ((currentSection + 1) % options.camSection == 0) {
+				prevCamera = !prevCamera
+			}
+
+			console.log((currentSection + 1) % options.camSection)
+			camera = prevCamera;
+		}
 
 		append_to_output(`{"mustHitSection":${camera},"typeOfSection":0,"lengthInSteps":16,"sectionNotes":[`)
 
@@ -208,22 +227,31 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 
 			var track = hitobj_x_to_track_number(notes[i].position[0]);
 
-			if (camera === false) {
-				append_to_output(track)
-			} else if (camera === true && p1 === true && p2 === false) {
-				append_to_output(track - (options.keycount / options.lanes))
-			} else if (camera === true && p1 === true && p2 === true) {
-				if (track > (options.keycount / options.lanes) - 1) {
-					append_to_output(track - (options.keycount / options.lanes))
-				} else if (track < (options.keycount / options.lanes)) {
+			if (options.altCamera && options.convert)
+			{
+				if (camera === false) {
+					append_to_output(track)
+				} else {
 					append_to_output(track + (options.keycount / options.lanes))
 				}
-
-			} else if (camera === true && p2 === false && p1 === false) {
-				if (track > (options.keycount / options.lanes) - 1) {
+			} else {
+				if (camera === false) {
+					append_to_output(track)
+				} else if (camera === true && p1 === true && p2 === false) {
 					append_to_output(track - (options.keycount / options.lanes))
-				} else if (track < (options.keycount / options.lanes)) {
-					append_to_output(track + (options.keycount / options.lanes))
+				} else if (camera === true && p1 === true && p2 === true) {
+					if (track > (options.keycount / options.lanes) - 1) {
+						append_to_output(track - (options.keycount / options.lanes))
+					} else if (track < (options.keycount / options.lanes)) {
+						append_to_output(track + (options.keycount / options.lanes))
+					}
+	
+				} else if (camera === true && p2 === false && p1 === false) {
+					if (track > (options.keycount / options.lanes) - 1) {
+						append_to_output(track - (options.keycount / options.lanes))
+					} else if (track < (options.keycount / options.lanes)) {
+						append_to_output(track + (options.keycount / options.lanes))
+					}
 				}
 			}
 
@@ -250,22 +278,31 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 
 				var track = hitobj_x_to_track_number(notes[i].position[0]) + (options.keycount / options.lanes);
 
-				if (camera === false) {
-					append_to_output(track)
-				} else if (camera === true && p1 === true && p2 === false) {
-					append_to_output(track - (options.keycount / options.lanes))
-				} else if (camera === true && p1 === true && p2 === true) {
-					if (track > (options.keycount / options.lanes) - 1) {
+				if (options.altCamera && options.convert)
+				{
+					if (camera === false) {
+						append_to_output(track)
+					} else {
 						append_to_output(track - (options.keycount / options.lanes))
-					} else if (track < (options.keycount / options.lanes)) {
-						append_to_output(track + (options.keycount / options.lanes))
 					}
-	
-				} else if (camera === true && p2 === false && p1 === false) {
-					if (track > (options.keycount / options.lanes) - 1) {
+				} else {
+					if (camera === false) {
+						append_to_output(track)
+					} else if (camera === true && p1 === true && p2 === false) {
 						append_to_output(track - (options.keycount / options.lanes))
-					} else if (track < (options.keycount / options.lanes)) {
-						append_to_output(track + (options.keycount / options.lanes))
+					} else if (camera === true && p1 === true && p2 === true) {
+						if (track > (options.keycount / options.lanes) - 1) {
+							append_to_output(track - (options.keycount / options.lanes))
+						} else if (track < (options.keycount / options.lanes)) {
+							append_to_output(track + (options.keycount / options.lanes))
+						}
+		
+					} else if (camera === true && p2 === false && p1 === false) {
+						if (track > (options.keycount / options.lanes) - 1) {
+							append_to_output(track - (options.keycount / options.lanes))
+						} else if (track < (options.keycount / options.lanes)) {
+							append_to_output(track + (options.keycount / options.lanes))
+						}
 					}
 				}
 
@@ -295,6 +332,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 
 		append_to_output(`]}`)
 		currentlength += sectionlength;
+		currentSection += 1;
 
 		var breaking = true;
 		for (var i = 0; i < beatmap.hitObjects.length; i++) {
@@ -313,8 +351,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	append_to_output(`]}}`)
 
 	if (options.format === true) {
-		console.log(rtv_lua)
-
 		var obj = JSON.parse(rtv_lua)
 		rtv_lua = JSON.stringify(obj, null, "\t")
 	}

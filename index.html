@@ -45,12 +45,14 @@
 					"speed": $("#speed").val(),
 					"keycount": $("#keycount").val(),
 					"song": $("#song").val(),
+					"camSection": $("#camSection").val(),
 					"onlyp1": document.getElementById("onlyp1").checked,
 					"svs": document.getElementById("addsvs").checked,
 					"bpmChanges": document.getElementById("addbpm").checked,
 					"convert": document.getElementById("convert").checked,
 					"format": document.getElementById("autoformat").checked,
 					"twoplayers": document.getElementById("twoplayers").checked,
+					"altCamera": document.getElementById("altCamera").checked,
 				};
 				$("#out").val(module.require("osu_to_lua")(osu_file_str, options))
 			})
@@ -72,13 +74,18 @@
 				<a>Speed</a><input id="speed" type="text" placeholder="Speed"><span data-tooltip='Note approach speed (Defaults to 1)' data-tooltip-position='right'>?</span>
 				<a>Keycount</a><input id="keycount" type="text" placeholder="Keycount"><span data-tooltip='Keycount (Defaults to 4)' data-tooltip-position='right'>?</span>
 			</div>
-			<div class="modifiers right">
-				<a>No camera movement</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"><span data-tooltip='Set mustHitSection to always true (Defaults to false)' data-tooltip-position='right'>?</span>
+			<div class="modifiers">
 				<a>Clone chart</a><input id="convert" type="checkbox" placeholder="convert"><span data-tooltip='Clone the chart to both sides (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Add slider velocities</a><input id="addsvs" type="checkbox" placeholder="addsvs"><span data-tooltip='Add SVs to "sliderVelocities" table (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Add BPM changes</a><input id="addbpm" type="checkbox" placeholder="addbpm"><span data-tooltip='Add BPM changes to "bpmChanges" table (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Convert to 2v2</a><input id="twoplayers" type="checkbox" placeholder="twoplayers"><span data-tooltip='Converts chart to 2v2 using hitsounds (Defaults to false)' data-tooltip-position='right'>?</span>
 				<a>Auto format</a><input id="autoformat" type="checkbox" placeholder="autoformat"><span data-tooltip='Automatically format your chart (Defaults to false)' data-tooltip-position='right'>?</span>
+			</div>
+			<div class="modifiers">
+				<a>Default camera movement</a><input id="defaultcam" type="checkbox" placeholder="defaultcam"><span data-tooltip='For FNF charts - will automatically switch camera depending on the first note of the section' data-tooltip-position='right'>?</span>
+				<a>No camera movement</a><input id="onlyp1" type="checkbox" placeholder="onlyp1"><span data-tooltip='Set mustHitSection to always true (Defaults to false)' data-tooltip-position='right'>?</span>
+				<a>Alternate camera movement</a><input id="altCamera" type="checkbox" placeholder="altCamera"><span data-tooltip='Alternate sections based on the value below (only compatible with cloned charts - disabled otherwise)' data-tooltip-position='right'>?</span>
+				<a>Section amount</a><input id="camSection" type="text" placeholder="Section amount"><span data-tooltip='Section count for alternate movement (defaults to 2 if enabled)' data-tooltip-position='right'>?</span>
 			</div>
 		</div>
 		<div class="objects">
