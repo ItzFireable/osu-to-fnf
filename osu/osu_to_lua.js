@@ -38,51 +38,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		6: -1,
 		7: -1
 	}
-	var _i_to_removes = {}
-
-	for (var i = 0; i < beatmap.hitObjects.length; i++) {
-		var itr = beatmap.hitObjects[i];
-		var type = itr.objectName;
-		var track = hitobj_x_to_track_number(itr.position[0]);
-		var start_time = itr.startTime
-
-		if (_tracks_next_open[track] >= start_time) {
-			console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
-				msToTime(start_time),
-				track,
-				type,
-				i
-			))
-
-			_i_to_removes[i] = true
-			continue
-		} else {
-			_tracks_next_open[track] = start_time
-		}
-
-		if (type == "slider") {
-			var end_time = start_time + itr.duration
-			if (_tracks_next_open[track] >= end_time) {
-				console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
-					msToTime(start_time),
-					track,
-					type,
-					i
-				))
-
-				_i_to_removes[i] = true
-				continue
-			} else {
-				_tracks_next_open[track] = end_time
-			}
-
-		}
-	}
-
-	beatmap.hitObjects = beatmap.hitObjects.filter(function(x,i){
-		return !(_i_to_removes[i])
-	})
-
 	if (options.song === "") {
 		if (beatmap.Title !== "" || beatmap.Title !== undefined) {
 			options.song = beatmap.Title;
@@ -145,6 +100,52 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	var baseBPM = 0;
 	console.log(options.bpm)
 
+	var _i_to_removes = {}
+
+	for (var i = 0; i < beatmap.hitObjects.length; i++) {
+		var itr = beatmap.hitObjects[i];
+		var type = itr.objectName;
+		
+		var track = hitobj_x_to_track_number(itr.position[0]);
+		var start_time = itr.startTime
+
+		if (_tracks_next_open[track] >= start_time) {
+			console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
+				msToTime(start_time),
+				track,
+				type,
+				i
+			))
+
+			_i_to_removes[i] = true
+			continue
+		} else {
+			_tracks_next_open[track] = start_time
+		}
+
+		if (type == "slider") {
+			var end_time = start_time + itr.duration
+			if (_tracks_next_open[track] >= end_time) {
+				console.error(format("--ERROR: Note overlapping another. At time (%s), track(%d). (Note type(%s) number(%d))",
+					msToTime(start_time),
+					track,
+					type,
+					i
+				))
+
+				_i_to_removes[i] = true
+				continue
+			} else {
+				_tracks_next_open[track] = end_time
+			}
+
+		}
+	}
+
+	beatmap.hitObjects = beatmap.hitObjects.filter(function(x,i){
+		return !(_i_to_removes[i])
+	})
+
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
@@ -183,6 +184,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		var p2 = false;
 		
 		var notes = [];
+
 		for (var i = 0; i < beatmap.hitObjects.length; i++) {
 			if (beatmap.hitObjects[i].startTime >= currentlength) {
 				if (beatmap.hitObjects[i].startTime < currentlength + sectionlength) {
@@ -197,6 +199,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 				}
 			}
 		}
+
 		var camera = false;
 		if (p2 === false && p1 === true) {
 			camera = true;
