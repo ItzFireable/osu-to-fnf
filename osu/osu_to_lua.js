@@ -47,7 +47,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		}
 	}
 	if (options.bpm === "") {
-		options.bpm = beatmap.timingPoints[0].beatLength > 0 ? (1 / beatmap.timingPoints[0].beatLength * 1000 * 60) : (1 / beatmap.timingPoints[1].beatLength * 1000 * 60);
+		options.bpm = Math.round((beatmap.timingPoints[0].beatLength > 0 ? (1 / beatmap.timingPoints[0].beatLength * 1000 * 60) : (1 / beatmap.timingPoints[1].beatLength * 1000 * 60)) * 100) / 100;
 	}
 	options.bpm = parseFloat(options.bpm);
 	if (isNaN(options.bpm)) {
