@@ -162,7 +162,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		baseBPM = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60)
 
 		rtv_lua = rtv_lua.slice(0, -1)
-		append_to_output(`],{"bpmChanges":[{"bpm": ${baseBPM}, "startTime": 0},`)
+		append_to_output(`],"bpmChanges":[{"bpm": ${baseBPM}, "startTime": 0},`)
 		
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
 			let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
