@@ -47,7 +47,7 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		}
 	}
 	if (options.bpm === "") {
-		options.bpm = Math.round((beatmap.timingPoints[0].beatLength > 0 ? (1 / beatmap.timingPoints[0].beatLength * 1000 * 60) : (1 / beatmap.timingPoints[1].beatLength * 1000 * 60)) * 100) / 100;
+		options.bpm = 0;
 	}
 	options.bpm = parseFloat(options.bpm);
 	if (isNaN(options.bpm)) {
@@ -84,8 +84,6 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	}
 
 	options.lanes = options.convert == true ? 1 : 2;
-	if (options.bpm == 0)
-		return 'Error: No BPM found.';
 
 	var crochet  = ((60 / options.bpm) * 1000);
 	var stepcrochet  = crochet  / 4;
@@ -149,12 +147,11 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 	if (options.svs === true) {
 		append_to_output(`{"sliderVelocities":[{"multiplier": 1, "startTime": 0},`)
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			if (beatmap.timingPoints[i].velocity == prevMult) continue;
-			prevMult = beatmap.timingPoints[i].velocity;
-			prevOffset = beatmap.timingPoints[i].offset;
-
-			if (prevMult != 1)
+			if (!beatmap.timingPoints[i].timingChange)
 			{
+				prevMult = beatmap.timingPoints[i].velocity;
+				prevOffset = beatmap.timingPoints[i].offset;
+				
 				append_to_output(`{"multiplier": ${prevMult},"startTime": ${prevOffset}},`)
 			}
 		}
@@ -162,14 +159,17 @@ module.export("osu_to_lua", function(osu_file_contents, options) {
 		baseBPM = (1 / beatmap.timingPoints[0].beatLength * 1000 * 60)
 
 		rtv_lua = rtv_lua.slice(0, -1)
-		append_to_output(`],"bpmChanges":[{"bpm": ${baseBPM}, "startTime": 0},`)
+		append_to_output(`],"bpmChanges":[`)
 		
 		for (var i = 0; i < beatmap.timingPoints.length; i++) {
-			let newBPM = (1 / beatmap.timingPoints[i].beatLength * 1000 * 60)
-			if (baseBPM != newBPM)
+			if (beatmap.timingPoints[i].timingChange)
 			{
-				baseBPM = newBPM;
-				append_to_output(`{"bpm": ${baseBPM},"startTime": ${beatmap.timingPoints[i].offset}},`)
+				let newBPM = Math.round(Math.abs((1 / beatmap.timingPoints[i].beatLength * 1000 * 60)))
+				if (baseBPM != newBPM)
+				{
+					baseBPM = newBPM;
+					append_to_output(`{"bpm": ${baseBPM},"startTime": ${beatmap.timingPoints[i].offset}},`)
+				}
 			}
 		}
 
